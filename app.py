@@ -1,7 +1,3 @@
-
-print("here")
-
-
 import streamlit as st
 import torch
 import torch.nn as nn
@@ -89,9 +85,8 @@ def main():
     st.title("🎨 AI vs Human Art Detector")
     st.write("Upload an anime/artwork image to detect if it's AI-generated or human-drawn")
     
-    print("Here")
     # Load model
-    # model, device = load_model()
+    model, device = load_model()
     
     if model is None:
         st.error("Could not load the model. Please check your internet connection.")
