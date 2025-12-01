@@ -82,7 +82,7 @@ def predict_image(model, image_tensor, device):
     return predicted_class.item(), probabilities.cpu().numpy()[0]
 
 def main():
-    st.title("🎨 AI vs Human Art Detector")
+    st.title("🎨 AI vs Human Anime Face Detector")
     st.write("Upload an anime/artwork image to detect if it's AI-generated or human-drawn")
     
     # Load model
