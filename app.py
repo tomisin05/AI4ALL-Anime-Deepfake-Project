@@ -108,11 +108,12 @@ def main():
     if uploaded_file is not None:
         # Display uploaded image
         image = Image.open(uploaded_file).convert("RGB")
+        display_image = image.resize((64, 64))
         
         col1, col2 = st.columns(2)
         
         with col1:
-            st.image(image, caption="Uploaded Image", use_column_width=True)
+            st.image(display_image, caption="Uploaded Image (64x64)", use_column_width=True)
         
         with col2:
             # Make prediction
@@ -137,9 +138,9 @@ def main():
                 # Progress bars for probabilities
                 st.write("**Detailed Probabilities:**")
                 st.write(f"Human-drawn: {probabilities[0]:.3f}")
-                st.progress(probabilities[0])
+                st.progress(float(probabilities[0]))
                 st.write(f"AI-generated: {probabilities[1]:.3f}")
-                st.progress(probabilities[1])
+                st.progress(float(probabilities[1]))
 
 if __name__ == "__main__":
     main()
