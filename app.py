@@ -123,15 +123,17 @@ def main():
         # Display uploaded image
         image = Image.open(uploaded_file).convert("RGB")
         
-        # Enhance image for display
-        width, height = image.size
-        if width < 300 or height < 300:
-            # Upscale small images
-            scale_factor = max(300 / width, 300 / height)
-            new_size = (int(width * scale_factor), int(height * scale_factor))
-            display_image = image.resize(new_size, Image.LANCZOS)
-        else:
-            display_image = image
+        # # Enhance image for display
+        # width, height = image.size
+        # if width < 300 or height < 300:
+        #     # Upscale small images
+        #     scale_factor = max(300 / width, 300 / height)
+        #     new_size = (int(width * scale_factor), int(height * scale_factor))
+        #     display_image = image.resize(new_size, Image.LANCZOS)
+        # else:
+        #     display_image = image
+
+        display_image = image.resize((64, 64), Image.LANCZOS)
         
         # Enhance sharpness and contrast
         enhancer = ImageEnhance.Sharpness(display_image)
