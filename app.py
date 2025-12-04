@@ -133,7 +133,7 @@ def main():
         # else:
         #     display_image = image
 
-        display_image = image.resize((64, 64), Image.LANCZOS)
+        display_image = image
         
         # Enhance sharpness and contrast
         enhancer = ImageEnhance.Sharpness(display_image)
