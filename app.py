@@ -82,14 +82,26 @@ def predict_image(model, image_tensor, device):
     return predicted_class.item(), probabilities.cpu().numpy()[0]
 
 def main():
-    st.title("🎨 AI vs Human Anime Face Detector")
-    st.write("Upload an anime/artwork image to detect if it's AI-generated or human-drawn")
+    # Page config
+    st.set_page_config(page_title="Anime AI Detector", page_icon="🎭", layout="wide")
+    
+    # Header
+    st.markdown("<h1 style='text-align: center; color: #FF6B6B;'>🎭 Anime Face AI Detector</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-size: 18px; color: #666;'>Detect if anime character faces are AI-generated or human-created</p>", unsafe_allow_html=True)
+    
+    # Info section
+    with st.expander("ℹ️ How it works"):
+        st.write("""
+        This AI model uses a hybrid CNN-Vision Transformer architecture to analyze anime character faces and determine if they were:
+        - 🎨 **Human-created**: Traditional hand-drawn or digitally illustrated by artists
+        - 🤖 **AI-generated**: Created using artificial intelligence tools
+        """)
     
     # Load model
     model, device = load_model()
     
     if model is None:
-        st.error("Could not load the model. Please check your internet connection.")
+        st.error("❌ Could not load the model. Please check your internet connection.")
         return
     
     # Image transforms
@@ -99,10 +111,12 @@ def main():
         transforms.Normalize(mean=[0.5]*3, std=[0.5]*3)
     ])
     
-    # File uploader
+    # File uploader with better styling
+    st.markdown("### 📤 Upload Anime Face Image")
     uploaded_file = st.file_uploader(
-        "Choose an image...", 
-        type=['jpg', 'jpeg', 'png', 'bmp', 'gif']
+        "Choose an anime character face image...", 
+        type=['jpg', 'jpeg', 'png', 'bmp', 'gif'],
+        help="Upload clear images of anime character faces for best results"
     )
     
     if uploaded_file is not None:
@@ -125,37 +139,49 @@ def main():
         enhancer = ImageEnhance.Contrast(display_image)
         display_image = enhancer.enhance(1.1)
         
-        col1, col2 = st.columns(2)
+        # Layout with better spacing
+        col1, col2, col3 = st.columns([1, 0.1, 1])
         
         with col1:
-            st.image(display_image, caption="Enhanced Image", use_column_width=True)
+            st.markdown("#### 🖼️ Uploaded Image")
+            st.image(display_image, use_column_width=True)
         
-        with col2:
+        with col3:
             # Make prediction
-            with st.spinner("Analyzing image..."):
+            with st.spinner("🔍 Analyzing anime face..."):
                 transformed_image = transform(image)
                 predicted_class, probabilities = predict_image(model, transformed_image, device)
                 
-                class_names = {0: "Human-drawn", 1: "AI-generated"}
+                class_names = {0: "Human-created", 1: "AI-generated"}
                 prediction = class_names[predicted_class]
                 confidence = probabilities[predicted_class] * 100
                 
-                # Display results
-                st.subheader("Prediction Results")
+                # Display results with better styling
+                st.markdown("#### 📊 Analysis Results")
                 
                 if predicted_class == 0:
-                    st.success(f"🎨 **{prediction}**")
+                    st.success(f"🎨 **{prediction}** ({confidence:.1f}% confidence)")
+                    result_color = "#28a745"
                 else:
-                    st.warning(f"🤖 **{prediction}**")
+                    st.error(f"🤖 **{prediction}** ({confidence:.1f}% confidence)")
+                    result_color = "#dc3545"
                 
-                st.write(f"**Confidence:** {confidence:.1f}%")
+                # Probability bars with custom styling
+                st.markdown("**Probability Breakdown:**")
                 
-                # Progress bars for probabilities
-                st.write("**Detailed Probabilities:**")
-                st.write(f"Human-drawn: {probabilities[0]:.3f}")
-                st.progress(float(probabilities[0]))
-                st.write(f"AI-generated: {probabilities[1]:.3f}")
-                st.progress(float(probabilities[1]))
+                # Human-created probability
+                human_prob = float(probabilities[0])
+                st.markdown(f"🎨 Human-created: **{human_prob:.1%}**")
+                st.progress(human_prob)
+                
+                # AI-generated probability  
+                ai_prob = float(probabilities[1])
+                st.markdown(f"🤖 AI-generated: **{ai_prob:.1%}**")
+                st.progress(ai_prob)
+                
+        # Add some spacing
+        st.markdown("---")
+        st.markdown("<p style='text-align: center; color: #888; font-size: 14px;'>Powered by Hybrid CNN-Vision Transformer</p>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
