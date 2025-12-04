@@ -2,7 +2,7 @@ import streamlit as st
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
-from PIL import Image
+from PIL import Image, ImageEnhance
 from huggingface_hub import hf_hub_download
 import numpy as np
 
@@ -108,12 +108,27 @@ def main():
     if uploaded_file is not None:
         # Display uploaded image
         image = Image.open(uploaded_file).convert("RGB")
-        display_image = image.resize((64, 64))
+        
+        # Enhance image for display
+        width, height = image.size
+        if width < 300 or height < 300:
+            # Upscale small images
+            scale_factor = max(300 / width, 300 / height)
+            new_size = (int(width * scale_factor), int(height * scale_factor))
+            display_image = image.resize(new_size, Image.LANCZOS)
+        else:
+            display_image = image
+        
+        # Enhance sharpness and contrast
+        enhancer = ImageEnhance.Sharpness(display_image)
+        display_image = enhancer.enhance(1.2)
+        enhancer = ImageEnhance.Contrast(display_image)
+        display_image = enhancer.enhance(1.1)
         
         col1, col2 = st.columns(2)
         
         with col1:
-            st.image(display_image, caption="Uploaded Image (64x64)", use_column_width=True)
+            st.image(display_image, caption="Enhanced Image", use_column_width=True)
         
         with col2:
             # Make prediction
